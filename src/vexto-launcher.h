@@ -31,6 +31,7 @@ typedef struct {
     GList           *filtered_apps; /* Currently filtered set */
     gint            current_page;
     gint            total_pages;
+    gint            icon_size;      /* Custom icon size */
 } VextoLauncher;
 
 /* Component functions */
