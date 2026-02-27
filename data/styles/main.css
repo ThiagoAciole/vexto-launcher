@@ -1,0 +1,92 @@
+/* Main Launcher Window */
+#vexto-app-launcher-window {
+    background-color: @theme_bg_color;
+    color: @theme_fg_color;
+    border-radius: 12px;
+    border: 1px solid alpha(@theme_fg_color, 0.1);
+}
+
+/* Header & Search Bar */
+#vexto-app-launcher-header {
+    background: transparent;
+    padding: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    margin-top: 10px;
+}
+
+#vexto-app-launcher-search {
+    background: alpha(@theme_fg_color, 0.05);
+    border: 1px solid alpha(@theme_fg_color, 0.1);
+    border-radius: 8px;
+    color: @theme_fg_color;
+    padding: 8px 12px;
+    margin: 5px;
+    transition: all 0.2s ease;
+}
+
+#vexto-app-launcher-search:focus {
+    background: alpha(@theme_fg_color, 0.1);
+    border-color: @theme_selected_bg_color;
+    box-shadow: 0 0 0 2px alpha(@theme_selected_bg_color, 0.3);
+}
+
+/* Navigation & Action Buttons */
+.nav-btn, .action-btn {
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    padding: 8px;
+    color: alpha(@theme_fg_color, 0.6);
+    transition: all 0.2s ease;
+}
+
+.nav-btn:hover, .action-btn:hover {
+    background: alpha(@theme_fg_color, 0.1);
+    color: @theme_fg_color;
+}
+
+/* App Grid & Buttons */
+#vexto-app-launcher-grid {
+    padding: 15px;
+}
+
+.app-button {
+    background: transparent;
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    margin: 4px;
+    transition: all 0.2s ease;
+}
+
+.app-button:hover {
+    background: alpha(@theme_fg_color, 0.08);
+}
+
+.app-button label {
+    font-size: 11px;
+    margin-top: 6px;
+    color: alpha(@theme_fg_color, 0.9);
+}
+
+/* Footer */
+#vexto-app-launcher-footer {
+    padding: 10px 15px;
+    border-top: 1px solid alpha(@theme_fg_color, 0.05);
+}
+
+/* Panel Button */
+#vexto-app-launcher-button {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+#vexto-app-launcher-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+#vexto-app-launcher-button.active {
+    background-color: @theme_selected_bg_color !important;
+}
