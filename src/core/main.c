@@ -15,6 +15,7 @@ static void ol_save(XfcePanelPlugin *plugin, VextoLauncher *ol) {
 
     if (G_LIKELY(rc != NULL)) {
         xfce_rc_write_int_entry(rc, "icon_size", ol->icon_size);
+        xfce_rc_write_entry(rc, "icon_name", ol->icon_name ? ol->icon_name : "vexto-launcher");
         xfce_rc_close(rc);
     }
 }
@@ -30,23 +31,69 @@ static void ol_load(VextoLauncher *ol) {
 
         if (G_LIKELY(rc != NULL)) {
             ol->icon_size = xfce_rc_read_int_entry(rc, "icon_size", 42);
+            ol->icon_name = g_strdup(xfce_rc_read_entry(rc, "icon_name", "vexto-launcher"));
             xfce_rc_close(rc);
         }
     } else {
         ol->icon_size = 42;
+        ol->icon_name = g_strdup("vexto-launcher");
     }
 }
 
-static void ol_size_changed(XfcePanelPlugin *plugin, gint size, VextoLauncher *ol) {
-    gint target_size;
-    if (ol->icon_size > 0) {
-        target_size = ol->icon_size;
-    } else {
-        /* This case (0) now technically shouldn't happen with default 42, 
-           하지만 we keep it as a safety 'auto' fallback. */
-        target_size = size - 4;
+static void ol_set_image_from_name_or_path(GtkImage *image, const gchar *name_or_path, gint size) {
+    gboolean found = FALSE;
+    // Se não houver nome, usamos o nome padrão do ícone que o Makefile instala
+    gchar *actual_name = (name_or_path && strlen(name_or_path) > 0) ? g_strdup(name_or_path) : g_strdup("vexto-launcher");
+
+    /* 1. Tenta pelo tema de ícones (Papirus, etc) */
+    if (!g_path_is_absolute(actual_name)) {
+        GtkIconTheme *icon_theme = gtk_icon_theme_get_default();
+        if (gtk_icon_theme_has_icon(icon_theme, actual_name)) {
+            gtk_image_set_from_icon_name(image, actual_name, GTK_ICON_SIZE_BUTTON);
+            found = TRUE;
+        }
     }
-    gtk_image_set_pixel_size(GTK_IMAGE(ol->icon), target_size);
+
+    /* 2. Se não encontrou no tema, tenta caminhos absolutos baseados no Makefile */
+    if (!found) {
+        const gchar *paths_to_check[] = {
+            actual_name, // Caso o usuário tenha selecionado um arquivo manualmente
+            "/usr/share/icons/hicolor/48x48/apps/vexto-launcher.svg", // Onde seu Makefile instala
+            "/usr/share/icons/hicolor/scalable/apps/vexto-launcher.svg",
+            "/usr/share/pixmaps/vexto-launcher.svg",
+            NULL
+        };
+
+        for (int i = 0; paths_to_check[i] != NULL; i++) {
+            if (g_file_test(paths_to_check[i], G_FILE_TEST_EXISTS)) {
+                GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file_at_scale(paths_to_check[i], size, size, TRUE, NULL);
+                if (pixbuf) {
+                    gtk_image_set_from_pixbuf(image, pixbuf);
+                    g_object_unref(pixbuf);
+                    found = TRUE;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (!found) {
+        gtk_image_set_from_icon_name(image, "xfce4-panel-menu", GTK_ICON_SIZE_BUTTON);
+    }
+    
+    gtk_image_set_pixel_size(image, size);
+    g_free(actual_name);
+}
+
+static void ol_update_icon(VextoLauncher *ol) {
+    gint size = xfce_panel_plugin_get_size(ol->plugin);
+    gint target_size = (ol->icon_size > 0) ? ol->icon_size : size - 4;
+    
+    ol_set_image_from_name_or_path(GTK_IMAGE(ol->icon), ol->icon_name, target_size);
+}
+
+static void ol_size_changed(XfcePanelPlugin *plugin, gint size, VextoLauncher *ol) {
+    ol_update_icon(ol);
 }
 
 static gboolean ol_button_press(GtkWidget *widget, GdkEventButton *event, VextoLauncher *ol) {
@@ -63,36 +110,93 @@ static gboolean ol_button_press(GtkWidget *widget, GdkEventButton *event, VextoL
 
 static void ol_icon_size_changed(GtkSpinButton *spin, VextoLauncher *ol) {
     ol->icon_size = gtk_spin_button_get_value_as_int(spin);
-    ol_size_changed(ol->plugin, xfce_panel_plugin_get_size(ol->plugin), ol);
+    ol_update_icon(ol);
+}
+
+static void ol_icon_chooser_clicked(GtkWidget *button, VextoLauncher *ol) {
+    /* Standard GTK Icon Chooser as fallback or replacement if XFCE one fails */
+    GtkWidget *dialog = gtk_file_chooser_dialog_new("Selecionar Arquivo de Ícone",
+                                                  GTK_WINDOW(gtk_widget_get_toplevel(button)),
+                                                  GTK_FILE_CHOOSER_ACTION_OPEN,
+                                                  "Cancelar", GTK_RESPONSE_CANCEL,
+                                                  "Selecionar", GTK_RESPONSE_ACCEPT,
+                                                  NULL);
+
+    GtkFileFilter *filter = gtk_file_filter_new();
+    gtk_file_filter_add_pixbuf_formats(filter);
+    gtk_file_filter_set_name(filter, "Imagens de Ícone");
+    gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
+
+    if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
+        g_free(ol->icon_name);
+        ol->icon_name = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+        ol_update_icon(ol);
+        
+        /* Update the icon on the button in settings */
+        GtkWidget *image = gtk_bin_get_child(GTK_BIN(button));
+        if (GTK_IS_IMAGE(image)) {
+            ol_set_image_from_name_or_path(GTK_IMAGE(image), ol->icon_name, 24);
+        }
+    }
+    gtk_widget_destroy(dialog);
 }
 
 static void ol_configure(XfcePanelPlugin *plugin, VextoLauncher *ol) {
     GtkWidget *dialog = xfce_titled_dialog_new_with_mixed_buttons(
-        "Configurações do Vexto Launcher",
+        "Vexto Launcher",
         GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(plugin))),
         GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
         "window-close-symbolic", "Fechar", GTK_RESPONSE_OK, NULL);
 
+    gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER);
+    gtk_window_set_icon_name(GTK_WINDOW(dialog), "preferences-system");
+    gtk_window_set_default_size(GTK_WINDOW(dialog), 400, 300);
+
     GtkWidget *content = gtk_dialog_get_content_area(GTK_DIALOG(dialog));
-    GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 12);
-    gtk_container_set_border_width(GTK_CONTAINER(vbox), 15);
+    
+    GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 18);
+    gtk_container_set_border_width(GTK_CONTAINER(vbox), 12);
     gtk_box_pack_start(GTK_BOX(content), vbox, TRUE, TRUE, 0);
 
-    /* Icon Size Setting */
-    GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
-    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
+    /* Section: Aparência */
+    GtkWidget *section_label = gtk_label_new(NULL);
+    gtk_label_set_markup(GTK_LABEL(section_label), "<b>Aparência</b>");
+    gtk_label_set_xalign(GTK_LABEL(section_label), 0.0);
+    gtk_box_pack_start(GTK_BOX(vbox), section_label, FALSE, FALSE, 0);
 
-    GtkWidget *label = gtk_label_new("Tamanho do Ícone:");
-    gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
+    GtkWidget *inner_vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 12);
+    gtk_widget_set_margin_start(GTK_WIDGET(inner_vbox), 12);
+    gtk_box_pack_start(GTK_BOX(vbox), inner_vbox, FALSE, FALSE, 0);
 
-    GtkWidget *spin = gtk_spin_button_new_with_range(0, 128, 1);
+    /* Icon Configuration Row */
+    GtkWidget *row_icon = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
+    gtk_box_pack_start(GTK_BOX(inner_vbox), row_icon, FALSE, FALSE, 0);
+    
+    GtkWidget *lbl_icon = gtk_label_new("Ícone do Painel:");
+    gtk_label_set_xalign(GTK_LABEL(lbl_icon), 0.0);
+    gtk_box_pack_start(GTK_BOX(row_icon), lbl_icon, TRUE, TRUE, 0);
+    
+    GtkWidget *icon_button = gtk_button_new();
+    GtkWidget *btn_image = gtk_image_new();
+    ol_set_image_from_name_or_path(GTK_IMAGE(btn_image), ol->icon_name, 24);
+    gtk_container_add(GTK_CONTAINER(icon_button), btn_image);
+    gtk_box_pack_end(GTK_BOX(row_icon), icon_button, FALSE, FALSE, 0);
+    g_signal_connect(icon_button, "clicked", G_CALLBACK(ol_icon_chooser_clicked), ol);
+
+    /* Icon Size Configuration Row */
+    GtkWidget *row_size = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
+    gtk_box_pack_start(GTK_BOX(inner_vbox), row_size, FALSE, FALSE, 0);
+    
+    GtkWidget *lbl_size = gtk_label_new("Tamanho do Ícone:");
+    gtk_label_set_xalign(GTK_LABEL(lbl_size), 0.0);
+    gtk_box_pack_start(GTK_BOX(row_size), lbl_size, TRUE, TRUE, 0);
+    
+    GtkWidget *spin = gtk_spin_button_new_with_range(16, 128, 1);
     gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin), ol->icon_size);
-    gtk_box_pack_start(GTK_BOX(hbox), spin, TRUE, TRUE, 0);
+    gtk_box_pack_end(GTK_BOX(row_size), spin, FALSE, FALSE, 0);
     g_signal_connect(spin, "value-changed", G_CALLBACK(ol_icon_size_changed), ol);
 
-    gtk_widget_show_all(dialog);
-    xfce_titled_dialog_set_subtitle(XFCE_TITLED_DIALOG(dialog), "Personalize seu menu");
-    
+    gtk_widget_show_all(vbox);
     gtk_dialog_run(GTK_DIALOG(dialog));
     gtk_widget_destroy(dialog);
     
@@ -103,6 +207,7 @@ static void ol_free(XfcePanelPlugin *plugin, VextoLauncher *ol) {
     if (ol->window) gtk_widget_destroy(ol->window);
     if (ol->all_apps) g_list_free_full(ol->all_apps, g_object_unref);
     if (ol->filtered_apps) g_list_free(ol->filtered_apps);
+    g_free(ol->icon_name);
     g_slice_free(VextoLauncher, ol);
 }
 
@@ -128,7 +233,8 @@ static void ol_construct(XfcePanelPlugin *plugin) {
     gtk_widget_set_name(ol->button, "vexto-launcher-button");
     gtk_button_set_relief(GTK_BUTTON(ol->button), GTK_RELIEF_NONE);
     
-    ol->icon = gtk_image_new_from_icon_name("vexto-launcher", GTK_ICON_SIZE_BUTTON);
+    ol->icon = gtk_image_new();
+    ol_update_icon(ol);
     gtk_container_add(GTK_CONTAINER(ol->button), ol->icon);
     
     gtk_container_add(GTK_CONTAINER(plugin), ol->button);

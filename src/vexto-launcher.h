@@ -32,6 +32,7 @@ typedef struct {
     gint            current_page;
     gint            total_pages;
     gint            icon_size;      /* Custom icon size */
+    gchar           *icon_name;     /* Custom icon name */
 } VextoLauncher;
 
 /* Component functions */
