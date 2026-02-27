@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# Script de desinstalação do Vexto App Launcher
+# Script de desinstalação do Vexto Launcher
 
 COLOR_RED='\033[0;31m'
 COLOR_GREEN='\033[0;32m'

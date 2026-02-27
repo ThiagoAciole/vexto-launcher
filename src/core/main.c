@@ -29,11 +29,11 @@ static void ol_load(VextoLauncher *ol) {
         g_free(file);
 
         if (G_LIKELY(rc != NULL)) {
-            ol->icon_size = xfce_rc_read_int_entry(rc, "icon_size", 0);
+            ol->icon_size = xfce_rc_read_int_entry(rc, "icon_size", 42);
             xfce_rc_close(rc);
         }
     } else {
-        ol->icon_size = 0;
+        ol->icon_size = 42;
     }
 }
 
@@ -42,6 +42,8 @@ static void ol_size_changed(XfcePanelPlugin *plugin, gint size, VextoLauncher *o
     if (ol->icon_size > 0) {
         target_size = ol->icon_size;
     } else {
+        /* This case (0) now technically shouldn't happen with default 42, 
+           하지만 we keep it as a safety 'auto' fallback. */
         target_size = size - 4;
     }
     gtk_image_set_pixel_size(GTK_IMAGE(ol->icon), target_size);
@@ -80,7 +82,7 @@ static void ol_configure(XfcePanelPlugin *plugin, VextoLauncher *ol) {
     GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
-    GtkWidget *label = gtk_label_new("Tamanho do Ícone (0 = Auto):");
+    GtkWidget *label = gtk_label_new("Tamanho do Ícone:");
     gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
 
     GtkWidget *spin = gtk_spin_button_new_with_range(0, 128, 1);
