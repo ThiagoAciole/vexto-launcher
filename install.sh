@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# Script de instalação do oneLauncher reformulado
+# Script de instalação do Vexto Launcher reformulado
 # Focado em garantir que o plugin apareça na lista do painel
 
 COLOR_RED='\033[0;31m'
@@ -14,7 +14,7 @@ function print_success() { echo -e "${COLOR_GREEN}[OK] $1${COLOR_NC}"; }
 function print_error() { echo -e "${COLOR_RED}[ERRO] $1${COLOR_NC}"; }
 
 function main() {
-    echo "=== Preparando instalação do Vexto App Launcher ==="
+    echo "=== Preparando instalação do Vexto Launcher ==="
     
     # 1. Verificar dependências novamente por segurança
     print_info "Verificando pacotes necessários..."
@@ -54,7 +54,7 @@ function main() {
     echo "COMO ENCONTRAR O PLUGIN:"
     echo "1. Clique com o botão direito no seu PAINEL."
     echo "2. Vá em 'Painel' -> 'Adicionar novos itens'."
-    echo "3. Na busca, digite: Vexto App Launcher"
+    echo "3. Na busca, digite: Vexto Launcher"
     echo "4. Selecione e clique em 'Adicionar'."
     echo "-------------------------------------------------------"
     echo "Se ainda não aparecer, tente rodar este comando manualmente:"

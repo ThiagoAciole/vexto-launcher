@@ -1,5 +1,5 @@
 /* Main Launcher Window */
-#vexto-app-launcher-window {
+#vexto-launcher-window {
     background-color: @theme_bg_color;
     color: @theme_fg_color;
     border-radius: 12px;
@@ -7,14 +7,14 @@
 }
 
 /* Header & Search Bar */
-#vexto-app-launcher-header {
+#vexto-launcher-header {
     background: transparent;
     padding: 10px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     margin-top: 10px;
 }
 
-#vexto-app-launcher-search {
+#vexto-launcher-search {
     background: alpha(@theme_fg_color, 0.05);
     border: 1px solid alpha(@theme_fg_color, 0.1);
     border-radius: 8px;
@@ -24,7 +24,7 @@
     transition: all 0.2s ease;
 }
 
-#vexto-app-launcher-search:focus {
+#vexto-launcher-search:focus {
     background: alpha(@theme_fg_color, 0.1);
     border-color: @theme_selected_bg_color;
     box-shadow: 0 0 0 2px alpha(@theme_selected_bg_color, 0.3);
@@ -46,7 +46,7 @@
 }
 
 /* App Grid & Buttons */
-#vexto-app-launcher-grid {
+#vexto-launcher-grid {
     padding: 15px;
 }
 
@@ -70,13 +70,13 @@
 }
 
 /* Footer */
-#vexto-app-launcher-footer {
+#vexto-launcher-footer {
     padding: 10px 15px;
     border-top: 1px solid alpha(@theme_fg_color, 0.05);
 }
 
 /* Panel Button */
-#vexto-app-launcher-button {
+#vexto-launcher-button {
     background: transparent;
     border: none;
     padding: 0;
@@ -84,16 +84,16 @@
     color: @theme_fg_color;
 }
 
-#vexto-app-launcher-button:hover {
+#vexto-launcher-button:hover {
     background-color: alpha(@theme_fg_color, 0.1);
 }
 
-#vexto-app-launcher-button.active {
+#vexto-launcher-button.active {
     background-color: @theme_selected_bg_color !important;
     color: @theme_selected_fg_color;
 }
 
-#vexto-app-launcher-button image {
+#vexto-launcher-button image {
     -gtk-icon-style: symbolic;
     color: inherit;
 }

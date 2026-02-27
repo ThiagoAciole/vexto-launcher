@@ -1,8 +1,8 @@
-# Makefile for oneLauncher
+# Makefile for Vexto Launcher
 # Precise setup for XFCE Panel detection
 
-NAME = vexto-app-launcher
-SONAME = libvexto-app-launcher.so
+NAME = vexto-launcher
+SONAME = libvexto-launcher.so
 SRC = src/core/main.c src/components/window.c src/components/grid.c src/utils/style.c
 OBJ = $(SRC:.c=.o)
 
@@ -23,10 +23,10 @@ endif
 
 DATADIR = $(PREFIX)/share/xfce4/panel/plugins
 ICONDIR = $(PREFIX)/share/icons/hicolor/48x48/apps
-ASSETDIR = $(PREFIX)/share/vexto-app-launcher/icons
-STYLEDIR = $(PREFIX)/share/vexto-app-launcher/styles
+ASSETDIR = $(PREFIX)/share/vexto-launcher/icons
+STYLEDIR = $(PREFIX)/share/vexto-launcher/styles
 
-all: $(SONAME) data/vexto-app-launcher.desktop
+all: $(SONAME) data/vexto-launcher.desktop
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
@@ -34,11 +34,11 @@ all: $(SONAME) data/vexto-app-launcher.desktop
 $(SONAME): $(OBJ)
 	$(CC) -o $@ $(OBJ) $(LDFLAGS)
 
-data/vexto-app-launcher.desktop: data/vexto-app-launcher.desktop.in
-	cp data/vexto-app-launcher.desktop.in data/vexto-app-launcher.desktop
+data/vexto-launcher.desktop: data/vexto-launcher.desktop.in
+	cp data/vexto-launcher.desktop.in data/vexto-launcher.desktop
 
 clean:
-	rm -f $(OBJ) $(SONAME) data/vexto-app-launcher.desktop
+	rm -f $(OBJ) $(SONAME) data/vexto-launcher.desktop
 
 install: all
 	mkdir -p $(DESTDIR)$(LIBDIR)
@@ -47,15 +47,15 @@ install: all
 	mkdir -p $(DESTDIR)$(ASSETDIR)
 	mkdir -p $(DESTDIR)$(STYLEDIR)
 	install -m 755 $(SONAME) $(DESTDIR)$(LIBDIR)/
-	install -m 644 data/vexto-app-launcher.desktop $(DESTDIR)$(DATADIR)/
-	install -m 644 data/icons/vexto-app-launcher.svg $(DESTDIR)$(ICONDIR)/
+	install -m 644 data/vexto-launcher.desktop $(DESTDIR)$(DATADIR)/
+	install -m 644 data/icons/vexto-launcher.svg $(DESTDIR)$(ICONDIR)/
 	install -m 644 data/styles/main.css $(DESTDIR)$(STYLEDIR)/
 	gtk-update-icon-cache -f -t $(DESTDIR)$(PREFIX)/share/icons/hicolor || true
 
 uninstall:
 	rm -f $(DESTDIR)$(LIBDIR)/$(SONAME)
-	rm -f $(DESTDIR)$(DATADIR)/vexto-app-launcher.desktop
-	rm -f $(DESTDIR)$(ICONDIR)/vexto-app-launcher.svg
+	rm -f $(DESTDIR)$(DATADIR)/vexto-launcher.desktop
+	rm -f $(DESTDIR)$(ICONDIR)/vexto-launcher.svg
 	rm -rf $(DESTDIR)$(ASSETDIR)
 	rm -rf $(DESTDIR)$(STYLEDIR)
 

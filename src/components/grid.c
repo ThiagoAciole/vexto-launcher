@@ -1,4 +1,4 @@
-#include "../vexto-app-launcher.h"
+#include "../vexto-launcher.h"
 
 static void on_app_clicked(GtkWidget *widget, GAppInfo *app) {
     GError *error = NULL;
@@ -7,11 +7,11 @@ static void on_app_clicked(GtkWidget *widget, GAppInfo *app) {
         g_error_free(error);
     }
     /* Hide the grid after launch */
-    VextoAppLauncher *ol = g_object_get_data(G_OBJECT(widget), "ol");
-    if (ol) vexto_app_launcher_hide(ol);
+    VextoLauncher *ol = g_object_get_data(G_OBJECT(widget), "ol");
+    if (ol) vexto_launcher_hide(ol);
 }
 
-static GtkWidget* create_app_button(VextoAppLauncher *ol, GAppInfo *app) {
+static GtkWidget* create_app_button(VextoLauncher *ol, GAppInfo *app) {
     GtkWidget *btn = gtk_button_new();
     gtk_widget_set_name(btn, "app-button");
     gtk_style_context_add_class(gtk_widget_get_style_context(btn), "app-button");
@@ -35,7 +35,7 @@ static GtkWidget* create_app_button(VextoAppLauncher *ol, GAppInfo *app) {
     return btn;
 }
 
-void vexto_app_launcher_grid_set_page(VextoAppLauncher *ol, gint page) {
+void vexto_launcher_grid_set_page(VextoLauncher *ol, gint page) {
     if (page < 0 || page >= ol->total_pages) return;
     ol->current_page = page;
 
@@ -67,7 +67,7 @@ void vexto_app_launcher_grid_set_page(VextoAppLauncher *ol, gint page) {
     gtk_widget_show_all(ol->grid);
 }
 
-void vexto_app_launcher_grid_update(VextoAppLauncher *ol, const gchar *search_text) {
+void vexto_launcher_grid_update(VextoLauncher *ol, const gchar *search_text) {
     /* Reset filter and page */
     if (ol->filtered_apps) g_list_free(ol->filtered_apps);
     ol->filtered_apps = NULL;
@@ -89,5 +89,5 @@ void vexto_app_launcher_grid_update(VextoAppLauncher *ol, const gchar *search_te
     ol->total_pages = (n_apps + APPS_PER_PAGE - 1) / APPS_PER_PAGE;
     if (ol->total_pages == 0) ol->total_pages = 1;
 
-    vexto_app_launcher_grid_set_page(ol, 0);
+    vexto_launcher_grid_set_page(ol, 0);
 }

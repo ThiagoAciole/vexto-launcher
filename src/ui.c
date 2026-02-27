@@ -1,11 +1,11 @@
 #include <gio/gdesktopappinfo.h>
-#include "one-launcher.h"
+#include "vexto-launcher.h"
 
 #define APPS_PER_PAGE 20
 #define GRID_COLS 5
 #define ICON_SIZE 40
 
-const gchar* vexto_app_launcher_get_css(void) {
+const gchar* vexto_launcher_get_css(void) {
     return
     "window.launcher-window {\n"
     "  background-color: #1a1a1a;\n"
@@ -95,17 +95,17 @@ const gchar* vexto_app_launcher_get_css(void) {
     "}\n";
 }
 
-static void on_power_clicked(GtkWidget *widget, OneLauncher *ol) {
-    vexto_app_launcher_hide_grid(ol);
+static void on_power_clicked(GtkWidget *widget, VextoLauncher *ol) {
+    vexto_launcher_hide_grid(ol);
     g_spawn_command_line_async("xfce4-session-logout", NULL);
 }
 
-static void on_settings_clicked(GtkWidget *widget, OneLauncher *ol) {
-    vexto_app_launcher_hide_grid(ol);
+static void on_settings_clicked(GtkWidget *widget, VextoLauncher *ol) {
+    vexto_launcher_hide_grid(ol);
     g_spawn_command_line_async("xfce4-settings-manager", NULL);
 }
 
-void vexto_app_launcher_hide_grid(OneLauncher *ol) {
+void vexto_launcher_hide_grid(VextoLauncher *ol) {
     if (ol->window) gtk_widget_hide(ol->window);
     if (ol->button) gtk_style_context_remove_class(gtk_widget_get_style_context(ol->button), "active");
 }
@@ -114,30 +114,30 @@ static void on_app_clicked(GtkWidget *button, GAppInfo *app) {
     g_app_info_launch(app, NULL, NULL, NULL);
 }
 
-static void on_search_changed(GtkSearchEntry *entry, OneLauncher *ol) {
+static void on_search_changed(GtkSearchEntry *entry, VextoLauncher *ol) {
     ol->current_page = 0;
-    vexto_app_launcher_populate_grid(ol);
+    vexto_launcher_populate_grid(ol);
 }
 
-static void on_dot_clicked(GtkWidget *dot, OneLauncher *ol) {
+static void on_dot_clicked(GtkWidget *dot, VextoLauncher *ol) {
     gint page_index = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(dot), "page-index"));
     if (page_index != ol->current_page) {
         ol->current_page = page_index;
-        vexto_app_launcher_populate_grid(ol);
+        vexto_launcher_populate_grid(ol);
     }
 }
 
-static void on_nav_arrow_clicked(GtkWidget *button, OneLauncher *ol) {
+static void on_nav_arrow_clicked(GtkWidget *button, VextoLauncher *ol) {
     gboolean is_next = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(button), "is-next"));
     if (is_next) {
         if (ol->current_page < ol->total_pages - 1) ol->current_page++;
     } else {
         if (ol->current_page > 0) ol->current_page--;
     }
-    vexto_app_launcher_populate_grid(ol);
+    vexto_launcher_populate_grid(ol);
 }
 
-void vexto_app_launcher_populate_grid(OneLauncher *ol) {
+void vexto_launcher_populate_grid(VextoLauncher *ol) {
     const gchar *search_text = gtk_entry_get_text(GTK_ENTRY(ol->search_entry));
     
     /* Clear Grid */
@@ -233,7 +233,7 @@ void vexto_app_launcher_populate_grid(OneLauncher *ol) {
     gtk_widget_show_all(ol->window);
 }
 
-void vexto_app_launcher_show_grid(OneLauncher *ol) {
+void vexto_launcher_show_grid(VextoLauncher *ol) {
     if (!ol->window) {
         ol->all_apps = g_app_info_get_all();
         ol->current_page = 0;
@@ -256,7 +256,7 @@ void vexto_app_launcher_show_grid(OneLauncher *ol) {
 
         /* Apply CSS */
         GtkCssProvider *css = gtk_css_provider_new();
-        gtk_css_provider_load_from_data(css, vexto_app_launcher_get_css(), -1, NULL);
+        gtk_css_provider_load_from_data(css, vexto_launcher_get_css(), -1, NULL);
         gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(css), GTK_STYLE_PROVIDER_PRIORITY_USER);
 
         GtkWidget *main_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
@@ -313,7 +313,7 @@ void vexto_app_launcher_show_grid(OneLauncher *ol) {
         g_signal_connect(ol->window, "focus-out-event", G_CALLBACK(gtk_widget_hide_on_delete), NULL);
     }
 
-    vexto_app_launcher_populate_grid(ol);
+    vexto_launcher_populate_grid(ol);
     if (ol->button) gtk_style_context_add_class(gtk_widget_get_style_context(ol->button), "active");
     gtk_window_present(GTK_WINDOW(ol->window));
     gtk_widget_grab_focus(ol->search_entry);

@@ -1,25 +1,25 @@
-#include "../vexto-app-launcher.h"
+#include "../vexto-launcher.h"
 
 static void ol_construct(XfcePanelPlugin *plugin);
 XFCE_PANEL_PLUGIN_REGISTER(ol_construct);
 
-static void ol_size_changed(XfcePanelPlugin *plugin, gint size, VextoAppLauncher *ol) {
+static void ol_size_changed(XfcePanelPlugin *plugin, gint size, VextoLauncher *ol) {
     gtk_image_set_pixel_size(GTK_IMAGE(ol->icon), size - 4);
 }
 
-static gboolean ol_button_press(GtkWidget *widget, GdkEventButton *event, VextoAppLauncher *ol) {
+static gboolean ol_button_press(GtkWidget *widget, GdkEventButton *event, VextoLauncher *ol) {
     if (event->button == 1) {
         if (ol->window && gtk_widget_get_visible(ol->window)) {
-            vexto_app_launcher_hide(ol);
+            vexto_launcher_hide(ol);
         } else {
-            vexto_app_launcher_show(ol);
+            vexto_launcher_show(ol);
         }
         return TRUE;
     }
     return FALSE;
 }
 
-static void ol_configure(XfcePanelPlugin *plugin, VextoAppLauncher *ol) {
+static void ol_configure(XfcePanelPlugin *plugin, VextoLauncher *ol) {
     GtkWidget *dialog = xfce_titled_dialog_new_with_mixed_buttons(
         "Sobre o Vexto App Launcher",
         GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(plugin))),
@@ -35,15 +35,15 @@ static void ol_configure(XfcePanelPlugin *plugin, VextoAppLauncher *ol) {
     g_signal_connect(dialog, "response", G_CALLBACK(gtk_widget_destroy), NULL);
 }
 
-static void ol_free(XfcePanelPlugin *plugin, VextoAppLauncher *ol) {
+static void ol_free(XfcePanelPlugin *plugin, VextoLauncher *ol) {
     if (ol->window) gtk_widget_destroy(ol->window);
     if (ol->all_apps) g_list_free_full(ol->all_apps, g_object_unref);
     if (ol->filtered_apps) g_list_free(ol->filtered_apps);
-    g_slice_free(VextoAppLauncher, ol);
+    g_slice_free(VextoLauncher, ol);
 }
 
 static void ol_construct(XfcePanelPlugin *plugin) {
-    VextoAppLauncher *ol = g_slice_new0(VextoAppLauncher);
+    VextoLauncher *ol = g_slice_new0(VextoLauncher);
     ol->plugin = plugin;
     
     /* Initialize fields (g_slice_new0 already zeros, but being explicit) */
@@ -54,14 +54,14 @@ static void ol_construct(XfcePanelPlugin *plugin) {
     ol->window = NULL;
     
     /* Global Style Initialization */
-    vexto_app_launcher_style_init();
+    vexto_launcher_style_init();
 
     /* Panel Button */
     ol->button = xfce_panel_create_button();
-    gtk_widget_set_name(ol->button, "vexto-app-launcher-button");
+    gtk_widget_set_name(ol->button, "vexto-launcher-button");
     gtk_button_set_relief(GTK_BUTTON(ol->button), GTK_RELIEF_NONE);
     
-    ol->icon = gtk_image_new_from_icon_name("vexto-app-launcher", GTK_ICON_SIZE_BUTTON);
+    ol->icon = gtk_image_new_from_icon_name("vexto-launcher", GTK_ICON_SIZE_BUTTON);
     gtk_container_add(GTK_CONTAINER(ol->button), ol->icon);
     
     gtk_container_add(GTK_CONTAINER(plugin), ol->button);

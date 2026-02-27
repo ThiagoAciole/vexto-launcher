@@ -1,4 +1,4 @@
-#include "../vexto-app-launcher.h"
+#include "../vexto-launcher.h"
 
 static const struct { gchar *icon; gchar *cmd; } actions_data[] = {
     {"system-shutdown-symbolic", "xfce4-session-logout --halt"},
@@ -7,8 +7,8 @@ static const struct { gchar *icon; gchar *cmd; } actions_data[] = {
     {"system-log-out-symbolic", "xfce4-session-logout --logout"}
 };
 
-static void on_search_changed(GtkSearchEntry *entry, VextoAppLauncher *ol) {
-    vexto_app_launcher_grid_update(ol, gtk_entry_get_text(GTK_ENTRY(entry)));
+static void on_search_changed(GtkSearchEntry *entry, VextoLauncher *ol) {
+    vexto_launcher_grid_update(ol, gtk_entry_get_text(GTK_ENTRY(entry)));
 }
 
 static void on_action_clicked(GtkWidget *btn, gpointer data) {
@@ -17,24 +17,24 @@ static void on_action_clicked(GtkWidget *btn, gpointer data) {
     g_spawn_command_line_async(cmd, NULL);
 }
 
-static gboolean on_window_focus_out(GtkWidget *widget, GdkEventFocus *event, VextoAppLauncher *ol) {
+static gboolean on_window_focus_out(GtkWidget *widget, GdkEventFocus *event, VextoLauncher *ol) {
     if (ol->window && gtk_widget_get_visible(ol->window)) {
-        vexto_app_launcher_hide(ol);
+        vexto_launcher_hide(ol);
     }
     return FALSE;
 }
 
-static void on_page_prev(GtkWidget *btn, VextoAppLauncher *ol) {
-    vexto_app_launcher_grid_set_page(ol, ol->current_page - 1);
+static void on_page_prev(GtkWidget *btn, VextoLauncher *ol) {
+    vexto_launcher_grid_set_page(ol, ol->current_page - 1);
 }
 
-static void on_page_next(GtkWidget *btn, VextoAppLauncher *ol) {
-    vexto_app_launcher_grid_set_page(ol, ol->current_page + 1);
+static void on_page_next(GtkWidget *btn, VextoLauncher *ol) {
+    vexto_launcher_grid_set_page(ol, ol->current_page + 1);
 }
 
-void vexto_app_launcher_window_init(VextoAppLauncher *ol) {
+void vexto_launcher_window_init(VextoLauncher *ol) {
     ol->window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    gtk_widget_set_name(ol->window, "vexto-app-launcher-window");
+    gtk_widget_set_name(ol->window, "vexto-launcher-window");
     gtk_window_set_decorated(GTK_WINDOW(ol->window), FALSE);
     gtk_window_set_skip_taskbar_hint(GTK_WINDOW(ol->window), TRUE);
     gtk_window_set_default_size(GTK_WINDOW(ol->window), DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
@@ -50,17 +50,17 @@ void vexto_app_launcher_window_init(VextoAppLauncher *ol) {
 
     /* Header with Search */
     ol->header = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
-    gtk_widget_set_name(ol->header, "vexto-app-launcher-header");
+    gtk_widget_set_name(ol->header, "vexto-launcher-header");
     gtk_box_pack_start(GTK_BOX(main_vbox), ol->header, FALSE, FALSE, 0);
 
     ol->search_entry = gtk_search_entry_new();
-    gtk_widget_set_name(ol->search_entry, "vexto-app-launcher-search");
+    gtk_widget_set_name(ol->search_entry, "vexto-launcher-search");
     gtk_box_pack_start(GTK_BOX(ol->header), ol->search_entry, TRUE, TRUE, 0);
     g_signal_connect(ol->search_entry, "search-changed", G_CALLBACK(on_search_changed), ol);
 
     /* Grid Area */
     ol->grid = gtk_grid_new();
-    gtk_widget_set_name(ol->grid, "vexto-app-launcher-grid");
+    gtk_widget_set_name(ol->grid, "vexto-launcher-grid");
     gtk_grid_set_column_homogeneous(GTK_GRID(ol->grid), TRUE);
     gtk_grid_set_row_homogeneous(GTK_GRID(ol->grid), TRUE);
     gtk_grid_set_column_spacing(GTK_GRID(ol->grid), 12);
@@ -69,7 +69,7 @@ void vexto_app_launcher_window_init(VextoAppLauncher *ol) {
 
     /* Footer with Pagination and Actions */
     ol->footer = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-    gtk_widget_set_name(ol->footer, "vexto-app-launcher-footer");
+    gtk_widget_set_name(ol->footer, "vexto-launcher-footer");
     gtk_container_set_border_width(GTK_CONTAINER(ol->footer), 8);
     gtk_box_pack_start(GTK_BOX(main_vbox), ol->footer, FALSE, FALSE, 0);
 
@@ -108,8 +108,8 @@ void vexto_app_launcher_window_init(VextoAppLauncher *ol) {
     g_signal_connect(ol->window, "focus-out-event", G_CALLBACK(on_window_focus_out), ol);
 }
 
-void vexto_app_launcher_show(VextoAppLauncher *ol) {
-    if (!ol->window) vexto_app_launcher_window_init(ol);
+void vexto_launcher_show(VextoLauncher *ol) {
+    if (!ol->window) vexto_launcher_window_init(ol);
     
     gint x = 0, y = 0;
     GtkAllocation alloc;
@@ -126,13 +126,13 @@ void vexto_app_launcher_show(VextoAppLauncher *ol) {
     
     gtk_window_move(GTK_WINDOW(ol->window), x, y);
     
-    vexto_app_launcher_grid_update(ol, NULL);
+    vexto_launcher_grid_update(ol, NULL);
     gtk_widget_show_all(ol->window);
     gtk_widget_grab_focus(ol->search_entry);
     gtk_style_context_add_class(gtk_widget_get_style_context(ol->button), "active");
 }
 
-void vexto_app_launcher_hide(VextoAppLauncher *ol) {
+void vexto_launcher_hide(VextoLauncher *ol) {
     if (ol->window) gtk_widget_hide(ol->window);
     gtk_style_context_remove_class(gtk_widget_get_style_context(ol->button), "active");
 }

@@ -1,10 +1,10 @@
-#include "../vexto-app-launcher.h"
+#include "../vexto-launcher.h"
 
-void vexto_app_launcher_style_init(void) {
+void vexto_launcher_style_init(void) {
     GtkCssProvider *provider = gtk_css_provider_new();
     
     /* Try to load from the data directory */
-    const gchar *style_path = "/usr/share/vexto-app-launcher/styles/main.css";
+    const gchar *style_path = "/usr/share/vexto-launcher/styles/main.css";
     GFile *file = g_file_new_for_path(style_path);
     
     if (g_file_query_exists(file, NULL)) {
@@ -24,7 +24,7 @@ void vexto_app_launcher_style_init(void) {
     g_object_unref(provider);
 }
 
-void vexto_app_launcher_style_apply(GtkWidget *widget) {
+void vexto_launcher_style_apply(GtkWidget *widget) {
     if (!widget) return;
     /* This can be used for widget-specific providers if needed */
 }

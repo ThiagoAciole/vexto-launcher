@@ -1,40 +1,40 @@
-#include "one-launcher.h"
+#include "vexto-launcher.h"
 
 static void ol_construct(XfcePanelPlugin *plugin);
 
 /* Register the plugin */
 XFCE_PANEL_PLUGIN_REGISTER(ol_construct);
 
-static void ol_size_changed(XfcePanelPlugin *plugin, gint size, OneLauncher *ol) {
+static void ol_size_changed(XfcePanelPlugin *plugin, gint size, VextoLauncher *ol) {
     /* Set icon size - very little padding for a larger appearance */
     gtk_image_set_pixel_size(GTK_IMAGE(ol->icon), size - 4);
 }
 
-static void ol_orientation_changed(XfcePanelPlugin *plugin, GtkOrientation orientation, OneLauncher *ol) {
+static void ol_orientation_changed(XfcePanelPlugin *plugin, GtkOrientation orientation, VextoLauncher *ol) {
     /* Handle orientation if needed */
 }
 
-static gboolean ol_button_press(GtkWidget *widget, GdkEventButton *event, OneLauncher *ol) {
+static gboolean ol_button_press(GtkWidget *widget, GdkEventButton *event, VextoLauncher *ol) {
     if (event->button == 1) {
         if (ol->window && gtk_widget_get_visible(ol->window)) {
-            vexto_app_launcher_hide_grid(ol);
+            vexto_launcher_hide_grid(ol);
         } else {
-            vexto_app_launcher_show_grid(ol);
+            vexto_launcher_show_grid(ol);
         }
         return TRUE;
     }
     return FALSE;
 }
 
-static void ol_configure(XfcePanelPlugin *plugin, OneLauncher *ol) {
+static void ol_configure(XfcePanelPlugin *plugin, VextoLauncher *ol) {
     GtkWidget *dialog = xfce_titled_dialog_new_with_mixed_buttons(
-        "Sobre o oneLauncher",
+        "Sobre o Vexto Launcher",
         GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(plugin))),
         GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
         "window-close-symbolic", "Fechar", GTK_RESPONSE_OK, NULL);
 
     GtkWidget *content = gtk_dialog_get_content_area(GTK_DIALOG(dialog));
-    GtkWidget *label = gtk_label_new("oneLauncher - Menu de Aplicativos Minimalista.");
+    GtkWidget *label = gtk_label_new("Vexto Launcher - Menu de Aplicativos Minimalista.");
     gtk_container_set_border_width(GTK_CONTAINER(label), 20);
     gtk_box_pack_start(GTK_BOX(content), label, TRUE, TRUE, 0);
 
@@ -42,14 +42,14 @@ static void ol_configure(XfcePanelPlugin *plugin, OneLauncher *ol) {
     g_signal_connect(dialog, "response", G_CALLBACK(gtk_widget_destroy), NULL);
 }
 
-static void ol_free(XfcePanelPlugin *plugin, OneLauncher *ol) {
+static void ol_free(XfcePanelPlugin *plugin, VextoLauncher *ol) {
     if (ol->window) gtk_widget_destroy(ol->window);
     if (ol->all_apps) g_list_free_full(ol->all_apps, g_object_unref);
-    g_slice_free(OneLauncher, ol);
+    g_slice_free(VextoLauncher, ol);
 }
 
 static void ol_construct(XfcePanelPlugin *plugin) {
-    OneLauncher *ol = g_slice_new0(OneLauncher);
+    VextoLauncher *ol = g_slice_new0(VextoLauncher);
     ol->plugin = plugin;
     
     ol->all_apps = NULL;
@@ -58,7 +58,7 @@ static void ol_construct(XfcePanelPlugin *plugin) {
 
     /* Create the panel button */
     ol->button = xfce_panel_create_button();
-    gtk_widget_set_name(ol->button, "one-launcher-button");
+    gtk_widget_set_name(ol->button, "vexto-launcher-button");
     gtk_button_set_relief(GTK_BUTTON(ol->button), GTK_RELIEF_NONE);
     
     /* Use the standard app grid icon */
@@ -80,17 +80,17 @@ static void ol_construct(XfcePanelPlugin *plugin) {
     /* CSS for panel button */
     GtkCssProvider *css = gtk_css_provider_new();
     gtk_css_provider_load_from_data(css, 
-        "#one-launcher-button {\n"
+        "#vexto-launcher-button {\n"
         "  background: transparent;\n"
         "  border: none;\n"
         "  padding: 0;\n"
         "  margin: 0;\n"
     "  transition: all 0.2s ease;\n"
     "}\n"
-    "#one-launcher-button:hover {\n"
+    "#vexto-launcher-button:hover {\n"
     "  background-color: rgba(255, 255, 255, 0.1);\n"
     "}\n"
-    "#one-launcher-button.active {\n"
+    "#vexto-launcher-button.active {\n"
     "  background-color: #3584e4 !important;\n"
     "  color: white;\n"
     "  box-shadow: inset 0 0 5px rgba(0,0,0,0.2);\n"

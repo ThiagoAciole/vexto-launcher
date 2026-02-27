@@ -1,5 +1,5 @@
-#ifndef __VEXTO_APP_LAUNCHER_H__
-#define __VEXTO_APP_LAUNCHER_H__
+#ifndef __vexto_launcher_H__
+#define __vexto_launcher_H__
 
 #include <gtk/gtk.h>
 #include <libxfce4panel/libxfce4panel.h>
@@ -31,17 +31,17 @@ typedef struct {
     GList           *filtered_apps; /* Currently filtered set */
     gint            current_page;
     gint            total_pages;
-} VextoAppLauncher;
+} VextoLauncher;
 
 /* Component functions */
-void vexto_app_launcher_window_init(VextoAppLauncher *ol);
-void vexto_app_launcher_grid_update(VextoAppLauncher *ol, const gchar *search_text);
-void vexto_app_launcher_grid_set_page(VextoAppLauncher *ol, gint page);
-void vexto_app_launcher_show(VextoAppLauncher *ol);
-void vexto_app_launcher_hide(VextoAppLauncher *ol);
+void vexto_launcher_window_init(VextoLauncher *ol);
+void vexto_launcher_grid_update(VextoLauncher *ol, const gchar *search_text);
+void vexto_launcher_grid_set_page(VextoLauncher *ol, gint page);
+void vexto_launcher_show(VextoLauncher *ol);
+void vexto_launcher_hide(VextoLauncher *ol);
 
 /* Utils */
-void vexto_app_launcher_style_init(void);
-void vexto_app_launcher_style_apply(GtkWidget *widget);
+void vexto_launcher_style_init(void);
+void vexto_launcher_style_apply(GtkWidget *widget);
 
-#endif /* __VEXTO_APP_LAUNCHER_H__ */
+#endif /* __vexto_launcher_H__ */

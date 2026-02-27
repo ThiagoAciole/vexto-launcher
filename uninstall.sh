@@ -13,7 +13,7 @@ function print_success() { echo -e "${COLOR_GREEN}[OK] $1${COLOR_NC}"; }
 function print_error() { echo -e "${COLOR_RED}[ERRO] $1${COLOR_NC}"; }
 
 function main() {
-    echo "=== Desinstalando Vexto App Launcher ==="
+    echo "=== Desinstalando Vexto Launcher ==="
     
     # 1. Executar o uninstall do Makefile (usando sudo)
     print_info "Removendo arquivos do sistema..."
