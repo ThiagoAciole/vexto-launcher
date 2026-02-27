@@ -12,6 +12,7 @@
     padding: 10px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 #vexto-launcher-search {
@@ -28,6 +29,35 @@
     background: alpha(@theme_fg_color, 0.1);
     border-color: @theme_selected_bg_color;
     box-shadow: 0 0 0 2px alpha(@theme_selected_bg_color, 0.3);
+}
+
+/* Folder Header */
+#vexto-launcher-folder-header {
+    padding: 10px 15px 5px 15px;
+    margin-top: 5px;
+}
+
+.folder-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-left: 8px;
+    color: @theme_fg_color;
+    margin-top: 10px;
+}
+
+.back-nav-btn {
+    background: alpha(@theme_fg_color, 0.05);
+    border: none;
+    border-radius: 8px;
+    padding: 8px;
+    color: alpha(@theme_fg_color, 0.8);
+    transition: all 0.2s ease;
+    margin-top: 10px;
+}
+
+.back-nav-btn:hover {
+    background: alpha(@theme_fg_color, 0.15);
+    color: @theme_fg_color;
 }
 
 /* Navigation & Action Buttons */

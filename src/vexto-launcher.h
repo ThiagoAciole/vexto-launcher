@@ -13,22 +13,37 @@
 #define GRID_COLS 4
 #define GRID_ROWS 3
 
+/* Grid Data Structures */
+typedef enum { ITEM_TYPE_APP, ITEM_TYPE_FOLDER, ITEM_TYPE_BACK } VextoItemType;
+
+typedef struct {
+  VextoItemType type;
+  gchar *id;          /* Used for sorting or identifying folder ID */
+  gchar *name;        /* Display name (App or Folder) */
+  GIcon *icon;        /* Display icon */
+  GAppInfo *app;      /* Only valid if type == ITEM_TYPE_APP */
+  GList *folder_apps; /* List of (VextoGridItem*) if type == ITEM_TYPE_FOLDER */
+} VextoGridItem;
+
 typedef struct {
   XfcePanelPlugin *plugin;
 
   /* UI Components */
-  GtkWidget *button;       /* Panel button */
-  GtkWidget *icon;         /* Panel icon */
-  GtkWidget *window;       /* Main launcher popup */
-  GtkWidget *header;       /* Search area */
-  GtkWidget *grid;         /* App grid */
-  GtkWidget *search_entry; /* Search input */
-  GtkWidget *page_dots;    /* Pagination container */
-  GtkWidget *footer;       /* Bottom actions area */
+  GtkWidget *button;        /* Panel button */
+  GtkWidget *icon;          /* Panel icon */
+  GtkWidget *window;        /* Main launcher popup */
+  GtkWidget *header;        /* Search area */
+  GtkWidget *folder_header; /* < [Folder Name] section */
+  GtkWidget *folder_label;  /* Label inside folder_header */
+  GtkWidget *grid;          /* App grid */
+  GtkWidget *search_entry;  /* Search input */
+  GtkWidget *page_dots;     /* Pagination container */
+  GtkWidget *footer;        /* Bottom actions area */
 
   /* Data */
-  GList *all_apps;
-  GList *filtered_apps; /* Currently filtered set */
+  GList *all_items;              /* Raw ordered list of VextoGridItem* */
+  GList *filtered_items;         /* Currently filtered items being paginated */
+  VextoGridItem *current_folder; /* NULL if root, or pointer to active folder */
   gint current_page;
   gint total_pages;
   gint icon_size;   /* Custom icon size */
@@ -38,7 +53,8 @@ typedef struct {
 /* Component functions */
 void vexto_launcher_window_init(VextoLauncher *ol);
 void vexto_launcher_grid_update(VextoLauncher *ol, const gchar *search_text);
-void vexto_launcher_grid_set_page(VextoLauncher *ol, gint page);
+void vexto_launcher_grid_set_page(VextoLauncher *ol, guint page);
+void on_item_clicked(GtkWidget *btn, gpointer data);
 void vexto_launcher_show(VextoLauncher *ol);
 void vexto_launcher_hide(VextoLauncher *ol);
 

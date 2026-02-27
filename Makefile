@@ -3,7 +3,7 @@
 
 NAME = vexto-launcher
 SONAME = libvexto-launcher.so
-SRC = src/core/main.c src/components/window.c src/components/grid.c src/utils/style.c
+SRC = src/core/main.c src/components/window.c src/components/grid.c src/utils/style.c src/utils/categories.c
 OBJ = $(SRC:.c=.o)
 
 CC = gcc
