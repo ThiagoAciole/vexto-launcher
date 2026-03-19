@@ -1,10 +1,10 @@
 #include "../utils/categories.h"
-#include "../vexto-launcher.h"
+#include "../labs-launcher.h"
 
 static void ol_construct(XfcePanelPlugin *plugin);
 XFCE_PANEL_PLUGIN_REGISTER(ol_construct);
 
-static void ol_save(XfcePanelPlugin *plugin, VextoLauncher *ol) {
+static void ol_save(XfcePanelPlugin *plugin, LabsLauncher *ol) {
   XfceRc *rc;
   gchar *file;
 
@@ -18,12 +18,12 @@ static void ol_save(XfcePanelPlugin *plugin, VextoLauncher *ol) {
   if (G_LIKELY(rc != NULL)) {
     xfce_rc_write_int_entry(rc, "icon_size", ol->icon_size);
     xfce_rc_write_entry(rc, "icon_name",
-                        ol->icon_name ? ol->icon_name : "vexto-launcher");
+                        ol->icon_name ? ol->icon_name : "labs-launcher");
     xfce_rc_close(rc);
   }
 }
 
-static void ol_load(VextoLauncher *ol) {
+static void ol_load(LabsLauncher *ol) {
   XfceRc *rc;
   gchar *file;
 
@@ -35,12 +35,12 @@ static void ol_load(VextoLauncher *ol) {
     if (G_LIKELY(rc != NULL)) {
       ol->icon_size = xfce_rc_read_int_entry(rc, "icon_size", 42);
       ol->icon_name =
-          g_strdup(xfce_rc_read_entry(rc, "icon_name", "vexto-launcher"));
+          g_strdup(xfce_rc_read_entry(rc, "icon_name", "labs-launcher"));
       xfce_rc_close(rc);
     }
   } else {
     ol->icon_size = 42;
-    ol->icon_name = g_strdup("vexto-launcher");
+    ol->icon_name = g_strdup("labs-launcher");
   }
 }
 
@@ -51,7 +51,7 @@ static void ol_set_image_from_name_or_path(GtkImage *image,
   // Se não houver nome, usamos o nome padrão do ícone que o Makefile instala
   gchar *actual_name = (name_or_path && strlen(name_or_path) > 0)
                            ? g_strdup(name_or_path)
-                           : g_strdup("vexto-launcher");
+                           : g_strdup("labs-launcher");
 
   /* 1. Tenta pelo tema de ícones (Papirus, etc) */
   if (!g_path_is_absolute(actual_name)) {
@@ -67,11 +67,11 @@ static void ol_set_image_from_name_or_path(GtkImage *image,
   if (!found) {
     const gchar *paths_to_check[] = {
         actual_name, // Caso o usuário tenha selecionado um arquivo manualmente
-        "/usr/share/icons/hicolor/48x48/apps/vexto-launcher.svg", // Onde seu
+        "/usr/share/icons/hicolor/48x48/apps/labs-launcher.svg", // Onde seu
                                                                   // Makefile
                                                                   // instala
-        "/usr/share/icons/hicolor/scalable/apps/vexto-launcher.svg",
-        "/usr/share/pixmaps/vexto-launcher.svg", NULL};
+        "/usr/share/icons/hicolor/scalable/apps/labs-launcher.svg",
+        "/usr/share/pixmaps/labs-launcher.svg", NULL};
 
     for (int i = 0; paths_to_check[i] != NULL; i++) {
       if (g_file_test(paths_to_check[i], G_FILE_TEST_EXISTS)) {
@@ -96,7 +96,7 @@ static void ol_set_image_from_name_or_path(GtkImage *image,
   g_free(actual_name);
 }
 
-static void ol_update_icon(VextoLauncher *ol) {
+static void ol_update_icon(LabsLauncher *ol) {
   gint size = xfce_panel_plugin_get_size(ol->plugin);
   gint target_size = (ol->icon_size > 0) ? ol->icon_size : size - 4;
 
@@ -105,29 +105,29 @@ static void ol_update_icon(VextoLauncher *ol) {
 }
 
 static void ol_size_changed(XfcePanelPlugin *plugin, gint size,
-                            VextoLauncher *ol) {
+                            LabsLauncher *ol) {
   ol_update_icon(ol);
 }
 
 static gboolean ol_button_press(GtkWidget *widget, GdkEventButton *event,
-                                VextoLauncher *ol) {
+                                LabsLauncher *ol) {
   if (event->button == 1) {
     if (ol->window && gtk_widget_get_visible(ol->window)) {
-      vexto_launcher_hide(ol);
+      labs_launcher_hide(ol);
     } else {
-      vexto_launcher_show(ol);
+      labs_launcher_show(ol);
     }
     return TRUE;
   }
   return FALSE;
 }
 
-static void ol_icon_size_changed(GtkSpinButton *spin, VextoLauncher *ol) {
+static void ol_icon_size_changed(GtkSpinButton *spin, LabsLauncher *ol) {
   ol->icon_size = gtk_spin_button_get_value_as_int(spin);
   ol_update_icon(ol);
 }
 
-static void ol_icon_chooser_clicked(GtkWidget *button, VextoLauncher *ol) {
+static void ol_icon_chooser_clicked(GtkWidget *button, LabsLauncher *ol) {
   /* Standard GTK Icon Chooser as fallback or replacement if XFCE one fails */
   GtkWidget *dialog = gtk_file_chooser_dialog_new(
       "Selecionar Arquivo de Ícone",
@@ -153,9 +153,9 @@ static void ol_icon_chooser_clicked(GtkWidget *button, VextoLauncher *ol) {
   gtk_widget_destroy(dialog);
 }
 
-static void ol_configure(XfcePanelPlugin *plugin, VextoLauncher *ol) {
+static void ol_configure(XfcePanelPlugin *plugin, LabsLauncher *ol) {
   GtkWidget *dialog = xfce_titled_dialog_new_with_mixed_buttons(
-      "Vexto Launcher", GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(plugin))),
+      "Labs Launcher", GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(plugin))),
       GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
       "window-close-symbolic", "Fechar", GTK_RESPONSE_OK, NULL);
 
@@ -215,38 +215,27 @@ static void ol_configure(XfcePanelPlugin *plugin, VextoLauncher *ol) {
   ol_save(plugin, ol);
 }
 
-static void ol_free(XfcePanelPlugin *plugin, VextoLauncher *ol) {
+static void ol_free(XfcePanelPlugin *plugin, LabsLauncher *ol) {
   if (ol->window)
     gtk_widget_destroy(ol->window);
   if (ol->all_items)
-    g_list_free_full(ol->all_items, (GDestroyNotify)vexto_grid_item_free);
+    g_list_free_full(ol->all_items, (GDestroyNotify)labs_grid_item_free);
   if (ol->filtered_items)
     g_list_free(ol->filtered_items);
   g_free(ol->icon_name);
-  g_slice_free(VextoLauncher, ol);
+  g_slice_free(LabsLauncher, ol);
 }
 
 static void ol_construct(XfcePanelPlugin *plugin) {
-  VextoLauncher *ol = g_slice_new0(VextoLauncher);
+  LabsLauncher *ol = g_slice_new0(LabsLauncher);
   ol->plugin = plugin;
+  /* g_slice_new0 already zeroes all fields */
 
-  /* Initialize fields (g_slice_new0 already zeros, but being explicit) */
-  ol->all_items = NULL;
-  ol->filtered_items = NULL;
-  ol->current_folder = NULL;
-  ol->current_page = 0;
-  ol->total_pages = 0;
-  ol->window = NULL;
-
-  /* Load saved settings */
   ol_load(ol);
+  labs_launcher_style_init();
 
-  /* Global Style Initialization */
-  vexto_launcher_style_init();
-
-  /* Panel Button */
   ol->button = xfce_panel_create_button();
-  gtk_widget_set_name(ol->button, "vexto-launcher-button");
+  gtk_widget_set_name(ol->button, "labs-launcher-button");
   gtk_button_set_relief(GTK_BUTTON(ol->button), GTK_RELIEF_NONE);
 
   ol->icon = gtk_image_new();
@@ -259,12 +248,10 @@ static void ol_construct(XfcePanelPlugin *plugin) {
 
   g_signal_connect(G_OBJECT(ol->button), "button-press-event",
                    G_CALLBACK(ol_button_press), ol);
-  g_signal_connect(G_OBJECT(plugin), "free-data", G_CALLBACK(ol_free), ol);
-  g_signal_connect(G_OBJECT(plugin), "size-changed",
-                   G_CALLBACK(ol_size_changed), ol);
-  g_signal_connect(G_OBJECT(plugin), "save", G_CALLBACK(ol_save), ol);
-  g_signal_connect(G_OBJECT(plugin), "configure-plugin",
-                   G_CALLBACK(ol_configure), ol);
+  g_signal_connect(G_OBJECT(plugin), "free-data",  G_CALLBACK(ol_free),      ol);
+  g_signal_connect(G_OBJECT(plugin), "size-changed", G_CALLBACK(ol_size_changed), ol);
+  g_signal_connect(G_OBJECT(plugin), "save",        G_CALLBACK(ol_save),      ol);
+  g_signal_connect(G_OBJECT(plugin), "configure-plugin", G_CALLBACK(ol_configure), ol);
 
   gtk_widget_show_all(ol->button);
 }

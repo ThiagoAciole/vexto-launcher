@@ -1,10 +1,10 @@
 #include "../utils/categories.h"
-#include "../vexto-launcher.h"
+#include "../labs-launcher.h"
 
 /* Exposed globally so window.c can use it for the standalone back button */
 void on_item_clicked(GtkWidget *btn, gpointer data) {
-  VextoGridItem *item = (VextoGridItem *)data;
-  VextoLauncher *ol = g_object_get_data(G_OBJECT(btn), "ol");
+  LabsGridItem *item = (LabsGridItem *)data;
+  LabsLauncher *ol = g_object_get_data(G_OBJECT(btn), "ol");
   if (!ol)
     return;
 
@@ -15,22 +15,22 @@ void on_item_clicked(GtkWidget *btn, gpointer data) {
       g_error_free(error);
     }
     /* Hide the grid after launch */
-    vexto_launcher_hide(ol);
+    labs_launcher_hide(ol);
   } else if (item->type == ITEM_TYPE_FOLDER) {
     ol->current_folder = item;
     /* Clear search if moving into folder? Usually yes */
     if (ol->search_entry)
       gtk_entry_set_text(GTK_ENTRY(ol->search_entry), "");
-    vexto_launcher_grid_update(ol, NULL);
+    labs_launcher_grid_update(ol, NULL);
   } else if (item->type == ITEM_TYPE_BACK) {
     ol->current_folder = NULL;
     if (ol->search_entry)
       gtk_entry_set_text(GTK_ENTRY(ol->search_entry), "");
-    vexto_launcher_grid_update(ol, NULL);
+    labs_launcher_grid_update(ol, NULL);
   }
 }
 
-static GtkWidget *create_item_button(VextoLauncher *ol, VextoGridItem *item) {
+static GtkWidget *create_item_button(LabsLauncher *ol, LabsGridItem *item) {
   GtkWidget *btn = gtk_button_new();
   gtk_widget_set_name(btn, "app-button");
   gtk_style_context_add_class(gtk_widget_get_style_context(btn), "app-button");
@@ -68,7 +68,7 @@ static GtkWidget *create_item_button(VextoLauncher *ol, VextoGridItem *item) {
   return btn;
 }
 
-void vexto_launcher_grid_set_page(VextoLauncher *ol, guint page) {
+void labs_launcher_grid_set_page(LabsLauncher *ol, guint page) {
   if (page < 0 || page >= ol->total_pages)
     return;
   ol->current_page = page;
@@ -93,7 +93,7 @@ void vexto_launcher_grid_set_page(VextoLauncher *ol, guint page) {
     if (attached >= APPS_PER_PAGE)
       break;
 
-    GtkWidget *btn = create_item_button(ol, (VextoGridItem *)l->data);
+    GtkWidget *btn = create_item_button(ol, (LabsGridItem *)l->data);
     gtk_grid_attach(GTK_GRID(ol->grid), btn, attached % GRID_COLS,
                     attached / GRID_COLS, 1, 1);
     attached++;
@@ -115,10 +115,10 @@ void vexto_launcher_grid_set_page(VextoLauncher *ol, guint page) {
   gtk_widget_show_all(ol->grid);
 }
 
-static void filter_items(VextoLauncher *ol, GList *source_items,
+static void filter_items(LabsLauncher *ol, GList *source_items,
                          const gchar *search_text) {
   for (GList *l = source_items; l != NULL; l = l->next) {
-    VextoGridItem *item = (VextoGridItem *)l->data;
+    LabsGridItem *item = (LabsGridItem *)l->data;
 
     if (search_text && *search_text) {
       gchar *lower_search = g_utf8_strdown(search_text, -1);
@@ -134,20 +134,20 @@ static void filter_items(VextoLauncher *ol, GList *source_items,
   }
 }
 
-void vexto_launcher_grid_update(VextoLauncher *ol, const gchar *search_text) {
+void labs_launcher_grid_update(LabsLauncher *ol, const gchar *search_text) {
   /* Reset filter and page */
   if (ol->filtered_items) {
     /* If the first item was a dynamically created back button, free it */
-    VextoGridItem *first = (VextoGridItem *)ol->filtered_items->data;
+    LabsGridItem *first = (LabsGridItem *)ol->filtered_items->data;
     if (first && first->type == ITEM_TYPE_BACK) {
-      vexto_grid_item_free(first);
+      labs_grid_item_free(first);
     }
     g_list_free(ol->filtered_items);
   }
   ol->filtered_items = NULL;
 
   if (!ol->all_items)
-    ol->all_items = vexto_launcher_parse_and_group_apps();
+    ol->all_items = labs_launcher_parse_and_group_apps();
 
   /* Determine source list and Header state */
   if (ol->current_folder) {
@@ -170,5 +170,5 @@ void vexto_launcher_grid_update(VextoLauncher *ol, const gchar *search_text) {
   if (ol->total_pages == 0)
     ol->total_pages = 1;
 
-  vexto_launcher_grid_set_page(ol, 0);
+  labs_launcher_grid_set_page(ol, 0);
 }

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# Script de desinstalação do Vexto Launcher
+# Script de desinstalação do Labs Launcher
 
 COLOR_RED='\033[0;31m'
 COLOR_GREEN='\033[0;32m'
@@ -13,7 +13,7 @@ function print_success() { echo -e "${COLOR_GREEN}[OK] $1${COLOR_NC}"; }
 function print_error() { echo -e "${COLOR_RED}[ERRO] $1${COLOR_NC}"; }
 
 function main() {
-    echo "=== Desinstalando Vexto Launcher ==="
+    echo "=== Desinstalando Labs Launcher ==="
     
     # 1. Executar o uninstall do Makefile (usando sudo)
     print_info "Removendo arquivos do sistema..."

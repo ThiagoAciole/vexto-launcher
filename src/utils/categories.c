@@ -28,7 +28,7 @@ typedef struct {
   const gchar *display_name;
   const gchar *icon_name;
   const gchar *freedesktop_categories;
-  VextoGridItem *folder_item; /* Created dynamically */
+  LabsGridItem *folder_item; /* Created dynamically */
 } CategoryMapping;
 
 static CategoryMapping category_mappings[] = {
@@ -45,8 +45,8 @@ static CategoryMapping category_mappings[] = {
     {"other", "Outros", "applications-other", "Other;"}, /* Fallback */
     {NULL, NULL, NULL, NULL}};
 
-VextoGridItem *vexto_grid_item_new_app(GAppInfo *app) {
-  VextoGridItem *item = g_new0(VextoGridItem, 1);
+LabsGridItem *labs_grid_item_new_app(GAppInfo *app) {
+  LabsGridItem *item = g_new0(LabsGridItem, 1);
   item->type = ITEM_TYPE_APP;
   item->app = g_object_ref(app);
   item->name = g_strdup(g_app_info_get_name(app));
@@ -56,9 +56,9 @@ VextoGridItem *vexto_grid_item_new_app(GAppInfo *app) {
   return item;
 }
 
-VextoGridItem *vexto_grid_item_new_folder(const gchar *id, const gchar *name,
+LabsGridItem *labs_grid_item_new_folder(const gchar *id, const gchar *name,
                                           const gchar *icon_name) {
-  VextoGridItem *item = g_new0(VextoGridItem, 1);
+  LabsGridItem *item = g_new0(LabsGridItem, 1);
   item->type = ITEM_TYPE_FOLDER;
   item->id = g_strdup(id);
   item->name = g_strdup(name);
@@ -67,8 +67,8 @@ VextoGridItem *vexto_grid_item_new_folder(const gchar *id, const gchar *name,
   return item;
 }
 
-VextoGridItem *vexto_grid_item_new_back(void) {
-  VextoGridItem *item = g_new0(VextoGridItem, 1);
+LabsGridItem *labs_grid_item_new_back(void) {
+  LabsGridItem *item = g_new0(LabsGridItem, 1);
   item->type = ITEM_TYPE_BACK;
   item->id = g_strdup("back");
   item->name = g_strdup("Voltar");
@@ -76,7 +76,7 @@ VextoGridItem *vexto_grid_item_new_back(void) {
   return item;
 }
 
-void vexto_grid_item_free(VextoGridItem *item) {
+void labs_grid_item_free(LabsGridItem *item) {
   if (!item)
     return;
   g_free(item->id);
@@ -86,7 +86,7 @@ void vexto_grid_item_free(VextoGridItem *item) {
   if (item->app)
     g_object_unref(item->app);
   if (item->folder_apps) {
-    g_list_free_full(item->folder_apps, (GDestroyNotify)vexto_grid_item_free);
+    g_list_free_full(item->folder_apps, (GDestroyNotify)labs_grid_item_free);
   }
   g_free(item);
 }
@@ -147,14 +147,14 @@ static CategoryMapping *find_best_category(GAppInfo *app) {
   return &category_mappings[6]; /* Other */
 }
 
-GList *vexto_launcher_parse_and_group_apps(void) {
+GList *labs_launcher_parse_and_group_apps(void) {
   GList *installed_apps = g_app_info_get_all();
 
   GList *favorites = NULL;
 
   /* Initialize folder items */
   for (int i = 0; category_mappings[i].id != NULL; i++) {
-    category_mappings[i].folder_item = vexto_grid_item_new_folder(
+    category_mappings[i].folder_item = labs_grid_item_new_folder(
         category_mappings[i].id, category_mappings[i].display_name,
         category_mappings[i].icon_name);
   }
@@ -164,11 +164,11 @@ GList *vexto_launcher_parse_and_group_apps(void) {
     GAppInfo *app = G_APP_INFO(l->data);
 
     if (is_favorite(app)) {
-      favorites = g_list_append(favorites, vexto_grid_item_new_app(app));
+      favorites = g_list_append(favorites, labs_grid_item_new_app(app));
     } else {
       CategoryMapping *mapping = find_best_category(app);
       mapping->folder_item->folder_apps = g_list_append(
-          mapping->folder_item->folder_apps, vexto_grid_item_new_app(app));
+          mapping->folder_item->folder_apps, labs_grid_item_new_app(app));
     }
   }
   g_list_free_full(installed_apps, g_object_unref);
@@ -182,7 +182,7 @@ GList *vexto_launcher_parse_and_group_apps(void) {
       final_items =
           g_list_append(final_items, category_mappings[i].folder_item);
     } else {
-      vexto_grid_item_free(category_mappings[i].folder_item);
+      labs_grid_item_free(category_mappings[i].folder_item);
       category_mappings[i].folder_item = NULL;
     }
   }

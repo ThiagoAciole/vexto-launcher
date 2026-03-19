@@ -1,7 +1,7 @@
 # Build artifacts
 *.so
 *.o
-vexto-panel.desktop
+labs-panel.desktop
 
 # Antigravity Kit
 .agent/
@@ -16,4 +16,4 @@ vexto-panel.desktop
 Thumbs.db
 
 # Reference projects
-vexto-panel-launcher/
+labs-panel-launcher/

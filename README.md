@@ -1,4 +1,4 @@
-﻿# 🚀 vexto-launcher
+﻿# 🚀 labs-launcher
 
 Um menu de aplicativos minimalista, moderno e performante, projetado especificamente para o painel do **XFCE**. Este plugin oferece uma interface limpa, inspirada em designs contemporâneos, com foco em usabilidade e estética.
 
@@ -32,8 +32,8 @@ sudo apt install build-essential libxfce4panel-2.0-dev libxfce4ui-2-dev libxfce4
 
 1. Clone o repositório:
    ```bash
-   git clone https://github.com/ThiagoAciole/vexto-launcher.git
-   cd vexto-launcher
+   git clone https://github.com/ThiagoAciole/labs-launcher.git
+   cd labs-launcher
    ```
 
 2. Compile o projeto:
@@ -51,7 +51,7 @@ sudo apt install build-essential libxfce4panel-2.0-dev libxfce4ui-2-dev libxfce4
    xfce4-panel -r
    ```
 
-5. Adicione ao painel: Clique com o botão direito no painel -> **Painel** -> **Adicionar novos itens** -> Procure por **Vexto Launcher**.
+5. Adicione ao painel: Clique com o botão direito no painel -> **Painel** -> **Adicionar novos itens** -> Procure por **Labs Launcher**.
 
 ## 📁 Estrutura do Projeto
 

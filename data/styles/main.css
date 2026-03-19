@@ -1,129 +1,180 @@
-/* Main Launcher Window */
-#vexto-launcher-window {
-    background-color: @theme_bg_color;
-    color: @theme_fg_color;
-    border-radius: 12px;
-    border: 1px solid alpha(@theme_fg_color, 0.1);
+/* ── Window ─────────────────────────────────────────────── */
+#labs-launcher-window {
+  background-color: #2d2d2d;
+  color: #e0e0e0;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* Header & Search Bar */
-#vexto-launcher-header {
-    background: transparent;
-    padding: 10px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    margin-top: 10px;
-    margin-bottom: 10px;
+/* ── Header ─────────────────────────────────────────────── */
+#labs-launcher-header {
+  background: transparent;
+  padding: 12px 12px 8px 12px;
+  margin: 12px;
 }
 
-#vexto-launcher-search {
-    background: alpha(@theme_fg_color, 0.05);
-    border: 1px solid alpha(@theme_fg_color, 0.1);
-    border-radius: 8px;
-    color: @theme_fg_color;
-    padding: 8px 12px;
-    margin: 5px;
-    transition: all 0.2s ease;
+#labs-launcher-search {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  color: #e0e0e0;
+  padding: 8px 12px;
+  transition: all 0.2s ease;
 }
 
-#vexto-launcher-search:focus {
-    background: alpha(@theme_fg_color, 0.1);
-    border-color: @theme_selected_bg_color;
-    box-shadow: 0 0 0 2px alpha(@theme_selected_bg_color, 0.3);
+#labs-launcher-search:focus {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #3584e4;
+  box-shadow: 0 0 0 2px rgba(53, 132, 228, 0.35);
 }
 
-/* Folder Header */
-#vexto-launcher-folder-header {
-    padding: 10px 15px 5px 15px;
-    margin-top: 5px;
+/* Settings button (header) */
+.header-action-btn {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 8px;
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.2s ease;
+  min-width: 36px;
+  min-height: 36px;
+}
+
+.header-action-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+}
+
+/* ── Folder Header ──────────────────────────────────────── */
+#labs-launcher-folder-header {
+  padding: 8px 15px 4px 15px;
 }
 
 .folder-title {
-    font-size: 15px;
-    font-weight: 600;
-    margin-left: 8px;
-    color: @theme_fg_color;
-    margin-top: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-left: 6px;
+  color: #e0e0e0;
 }
 
 .back-nav-btn {
-    background: alpha(@theme_fg_color, 0.05);
-    border: none;
-    border-radius: 8px;
-    padding: 8px;
-    color: alpha(@theme_fg_color, 0.8);
-    transition: all 0.2s ease;
-    margin-top: 10px;
+  background: rgba(255, 255, 255, 0.07);
+  border: none;
+  border-radius: 8px;
+  padding: 6px;
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.2s ease;
 }
 
 .back-nav-btn:hover {
-    background: alpha(@theme_fg_color, 0.15);
-    color: @theme_fg_color;
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
 }
 
-/* Navigation & Action Buttons */
-.nav-btn, .action-btn {
-    background: transparent;
-    border: none;
-    border-radius: 8px;
-    padding: 8px;
-    color: alpha(@theme_fg_color, 0.6);
-    transition: all 0.2s ease;
+/* ── Grid ───────────────────────────────────────────────── */
+#labs-launcher-scroll {
+  background: transparent;
+  border: none;
 }
 
-.nav-btn:hover, .action-btn:hover {
-    background: alpha(@theme_fg_color, 0.1);
-    color: @theme_fg_color;
+#labs-launcher-scroll scrollbar {
+  background: transparent;
+  border-radius: 4px;
+  min-height: 6px;
 }
 
-/* App Grid & Buttons */
-#vexto-launcher-grid {
-    padding: 15px;
+#labs-launcher-scroll scrollbar slider {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+  min-height: 6px;
+  min-width: 40px;
+}
+
+#labs-launcher-scroll scrollbar slider:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+#labs-launcher-grid {
+  padding: 14px;
+  background: transparent;
 }
 
 .app-button {
-    background: transparent;
-    border: none;
-    border-radius: 10px;
-    padding: 12px;
-    margin: 4px;
-    transition: all 0.2s ease;
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 8px;
+  transition: background 0.15s ease;
 }
 
 .app-button:hover {
-    background: alpha(@theme_fg_color, 0.08);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .app-button label {
-    font-size: 11px;
-    margin-top: 6px;
-    color: alpha(@theme_fg_color, 0.9);
+  font-size: 11px;
+  margin-top: 5px;
+  color: rgba(255, 255, 255, 0.85);
 }
 
-/* Footer */
-#vexto-launcher-footer {
-    padding: 10px 15px;
-    border-top: 1px solid alpha(@theme_fg_color, 0.05);
+/* ── Footer ─────────────────────────────────────────────── */
+#labs-launcher-footer {
+  padding: 8px 12px 12px 12px;
 }
 
-/* Panel Button */
-#vexto-launcher-button {
-    background: transparent;
-    border: none;
-    padding: 0;
-    margin: 0;
-    color: @theme_fg_color;
+#labs-user-avatar {
+  color: #3584e4;
+  -gtk-icon-style: symbolic;
 }
 
-#vexto-launcher-button:hover {
-    background-color: alpha(@theme_fg_color, 0.1);
+.user-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #e0e0e0;
 }
 
-#vexto-launcher-button.active {
-    background-color: @theme_selected_bg_color !important;
-    color: @theme_selected_fg_color;
+/* Action group (rounded pill with two buttons) */
+.action-group {
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 2px 4px;
+  margin-right: 5px;
 }
 
-#vexto-launcher-button image {
-    -gtk-icon-style: symbolic;
-    color: inherit;
+.group-btn {
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  padding: 6px;
+  color: #ffffff;
+  transition: all 0.2s ease;
+  min-width: 32px;
+  min-height: 32px;
+}
+
+.group-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* ── Panel Button ───────────────────────────────────────── */
+#labs-launcher-button {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: @theme_fg_color;
+}
+
+#labs-launcher-button:hover {
+  background-color: alpha(@theme_fg_color, 0.1);
+}
+
+#labs-launcher-button.active {
+  background-color: @theme_selected_bg_color !important;
+  color: @theme_selected_fg_color;
+}
+
+#labs-launcher-button image {
+  -gtk-icon-style: symbolic;
+  color: inherit;
 }
